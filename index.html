@@ -12,6 +12,8 @@
       padding-top: 80px;
       overflow: hidden;
       position: relative;
+      margin: 0;
+      height: 100vh;
     }
 
     h1 {
@@ -48,8 +50,9 @@
     #noBtn {
       background-color: #f44336;
       color: white;
-      position: relative; /* FIXED: no longer absolute */
       z-index: 2;
+      position: relative;
+      transition: all 0.1s ease; /* 💨 Faster movement */
     }
 
     #message {
@@ -141,7 +144,7 @@
       margin-top: 10px;
     }
 
-    /* 📱 Responsive design for smaller screens */
+    /* 📱 Responsive design */
     @media (max-width: 480px) {
       body {
         padding-top: 60px;
@@ -216,36 +219,38 @@
     const envelope = document.getElementById('envelope');
 
     function moveButtonRandomly() {
-      const maxX = window.innerWidth - noBtn.offsetWidth - 20;
-      const maxY = window.innerHeight - noBtn.offsetHeight - 20;
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
-      noBtn.style.position = 'absolute'; // move dynamically only after hover
+      const buttonWidth = noBtn.offsetWidth;
+      const buttonHeight = noBtn.offsetHeight;
+      const safeMargin = 20;
+
+      const maxX = window.innerWidth - buttonWidth - safeMargin;
+      const maxY = window.innerHeight - buttonHeight - safeMargin;
+      const x = Math.random() * (maxX - safeMargin) + safeMargin;
+      const y = Math.random() * (maxY - safeMargin) + safeMargin;
+
+      noBtn.style.position = 'fixed';
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
     }
 
-    // Avoid "No" click
-    noBtn.addEventListener('mouseover', moveButtonRandomly);
+    // 💨 Faster reaction
+    noBtn.addEventListener('mouseenter', moveButtonRandomly);
     noBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       moveButtonRandomly();
     });
 
-    // On "Yes" click
     yesBtn.addEventListener('click', () => {
       message.style.display = "block";
       document.getElementById("buttons").style.display = "none";
       letterContainer.style.display = "block";
 
-      // 🎉 Confetti
       confetti({
         particleCount: 150,
         spread: 80,
         origin: { y: 0.6 }
       });
 
-      // 💕 Floating hearts
       for (let i = 0; i < 15; i++) {
         const heart = document.createElement("div");
         heart.classList.add("heart");
@@ -257,7 +262,6 @@
       }
     });
 
-    // Letter opening
     envelope.addEventListener('click', () => {
       envelope.classList.toggle('open');
       envelope.classList.toggle('showLetter');
